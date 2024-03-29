@@ -4,5 +4,4 @@ namespace Trovee\Repository\Eloquent;
 
 class AbstractRepository
 {
-
 }

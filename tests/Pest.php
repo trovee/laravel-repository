@@ -26,7 +26,7 @@ uses(TestCase::class)->in(__DIR__);
 |
 */
 expect()->extend('toHaveCountGreaterThan', function ($count) {
-    if (!is_countable($this->value)) {
+    if (! is_countable($this->value)) {
         throw new InvalidArgumentException('The value is not countable.');
     }
 
@@ -34,7 +34,7 @@ expect()->extend('toHaveCountGreaterThan', function ($count) {
 });
 
 expect()->extend('toHaveCountLessThan', function ($count) {
-    if (!is_countable($this->value)) {
+    if (! is_countable($this->value)) {
         throw new InvalidArgumentException('The value is not countable.');
     }
 
@@ -42,7 +42,7 @@ expect()->extend('toHaveCountLessThan', function ($count) {
 });
 
 expect()->extend('toHaveCountBetween', function ($min, $max) {
-    if (!is_countable($this->value)) {
+    if (! is_countable($this->value)) {
         throw new InvalidArgumentException('The value is not countable.');
     }
 
@@ -55,7 +55,6 @@ expect()->extend('toBeOneOf', function ($values) {
     return in_array($this->value, $values);
 });
 
-
 /*
 |--------------------------------------------------------------------------
 | Functions
@@ -67,8 +66,7 @@ expect()->extend('toBeOneOf', function ($values) {
 |
 */
 
-
-if (!function_exists('invade')) {
+if (! function_exists('invade')) {
     function invade(object $object, \Closure $invader, $times = 1, $args = [], $return = false): mixed
     {
         $invader = $invader->bindTo($object, $object);
