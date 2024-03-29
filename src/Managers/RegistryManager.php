@@ -10,7 +10,6 @@ use Trovee\Repository\Exceptions\ClassException;
 
 class RegistryManager
 {
-
     protected Repository $config;
 
     public function __construct(protected Application $app)
@@ -27,11 +26,11 @@ class RegistryManager
      */
     public function getDefaultRepositoryAsTargetedToModel(string $model)
     {
-        if (!class_exists($model)) {
+        if (! class_exists($model)) {
             throw ClassException::doesNotExists($model);
         }
 
-        if (!is_subclass_of($model, Model::class)) {
+        if (! is_subclass_of($model, Model::class)) {
             throw ClassException::isNotModel($model);
         }
 
@@ -43,5 +42,4 @@ class RegistryManager
 
         throw ClassException::isNotRepository($repository);
     }
-
 }

@@ -13,10 +13,8 @@ use Trovee\Repository\Managers\RepositoryManager;
  */
 class Repository extends Facade
 {
-
     protected static function getFacadeAccessor()
     {
         return RepositoryManager::class;
     }
-
 }

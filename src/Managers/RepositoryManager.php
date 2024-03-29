@@ -22,5 +22,4 @@ class RepositoryManager
         // if not, create a default repository instance
         return $this->registryManager->getDefaultRepositoryAsTargetedToModel($model); // this is dummy return
     }
-
 }

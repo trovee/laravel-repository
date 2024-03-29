@@ -20,7 +20,7 @@ class TestCase extends Orchestra
     protected function getPackageProviders($app)
     {
         return [
-            RepositoryServiceProvider::class
+            RepositoryServiceProvider::class,
         ];
     }
 

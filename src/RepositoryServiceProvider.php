@@ -8,7 +8,6 @@ use Trovee\Repository\Managers\RegistryManager;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
-
     public function register()
     {
         $this->publishes([
@@ -23,7 +22,7 @@ class RepositoryServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-//        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        //        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->handleBindings();
     }
 
@@ -46,5 +45,4 @@ class RepositoryServiceProvider extends ServiceProvider
         }
 
     }
-
 }

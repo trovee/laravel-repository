@@ -8,7 +8,6 @@ use Trovee\Repository\Contracts\RepositoryInterface;
 
 class ClassException extends Exception
 {
-
     public static function doesNotExists(string $fqcn, $previous = null)
     {
         return new static("Failed when trying to access $fqcn. Class does not exists.", 0, $previous);
@@ -33,5 +32,4 @@ class ClassException extends Exception
     {
         return self::mustImplement($repository, RepositoryInterface::class);
     }
-
 }
