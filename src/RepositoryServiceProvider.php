@@ -66,4 +66,7 @@ class RepositoryServiceProvider extends ServiceProvider
             $this->app->bind($abstract, $concrete);
         }
     }
+
+
+
 }
