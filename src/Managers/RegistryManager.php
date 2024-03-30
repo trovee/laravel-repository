@@ -26,20 +26,62 @@ class RegistryManager
      */
     public function getDefaultRepositoryAsTargetedToModel(string $model)
     {
-        if (! class_exists($model)) {
-            throw ClassException::doesNotExists($model);
+        if (!class_exists($model)) {
+            throw new ClassNotFoundException($model);
         }
 
-        if (! is_subclass_of($model, Model::class)) {
-            throw ClassException::isNotModel($model);
+        if (!is_subclass_of($model, Model::class)) {
+            throw new RepositoryIntegrityException(
+                fqcn: $model,
+                verb: 'extends',
+                inheritance: Model::class
+            );
         }
 
-        $repository = $this->app->make($this->config->get('default_repository'));
+        $repository = $this->getDefaultRepository();
 
-        if ($repository instanceof RepositoryInterface) {
-            return $repository->proxyOf($model);
+        return $repository->proxyOf($model);
+    }
+
+    /**
+     * @throws ReflectionException
+     * @throws Throwable
+     */
+    public function resolveRepositoryAttribute(string $model): ?RepositoryInterface
+    {
+        if(!class_exists($model)){
+            return null;
+        }
+
+        $reflection = new ReflectionClass($model);
+
+        if ($reflection->isAbstract()) {
+            return null;
+        }
+
+        /** @var ?ReflectionAttribute $attribute */
+        $attribute = collect($reflection->getAttributes(RepositoryAttribute::class))->first();
+
+        if (is_null($attribute)) {
+            return null;
         }
 
         throw ClassException::isNotRepository($repository);
+    }
+
+    public function getDefaultRepository(): RepositoryInterface
+    {
+        $repository = $this->config->get('default_repository');
+
+        if (is_subclass_of($repository, RepositoryInterface::class)) {
+            return $this->app->make($this->config->get('default_repository'));
+        }
+
+        throw new RepositoryIntegrityException(
+            fqcn: $this->config->get('default_repository'),
+            verb: 'implements',
+            inheritance: RepositoryInterface::class
+        );
+
     }
 }

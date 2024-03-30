@@ -10,6 +10,7 @@ use Trovee\Repository\Managers\RepositoryManager;
  * @see RepositoryManager
  *
  * @method static RepositoryInterface get(string $model)
+ * @method static RepositoryInterface getDefaultRepositoryAsTargetedToModel(string $model)
  */
 class Repository extends Facade
 {
