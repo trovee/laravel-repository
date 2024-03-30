@@ -6,6 +6,5 @@ coverage
 docs
 phpunit.xml.dist
 phpstan.neon
-testbench.yaml
 vendor
 node_modules

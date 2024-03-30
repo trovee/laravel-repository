@@ -4,6 +4,7 @@ namespace Workbench\App\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Workbench\App\Repositories\UserRepository;
 
 class WorkbenchServiceProvider extends ServiceProvider
 {
@@ -12,7 +13,7 @@ class WorkbenchServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+
     }
 
     /**
@@ -20,6 +21,7 @@ class WorkbenchServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        config()->set('repository.bindings'.UserRepository::class, 'default');
         Route::view('/', 'welcome');
     }
 }
