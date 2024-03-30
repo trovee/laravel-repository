@@ -19,6 +19,11 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
+      - name: Prepare the branch
+        run: |
+          git branch -d fix-styling-issues || true
+          git checkout -b fix-styling-issues
+
       - name: Fix PHP code style issues
         uses: aglipanci/laravel-pint-action@2.3.0
 
