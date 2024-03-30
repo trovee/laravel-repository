@@ -25,6 +25,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->commands([
             InstallCommand::class,
             Commands\Generators\RepositoryInterfaceMakeCommand::class,
+            Commands\Generators\EloquentRepositoryMakeCommand::class,
         ]);
     }
 

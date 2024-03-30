@@ -1,0 +1,14 @@
+<?php
+
+namespace {{ namespace }};
+
+use Trovee\Repository\Eloquent\AbstractRepository;
+use {{ interface }} as {{ interfaceShortName }}Contract;
+use {{ model }};
+
+final class {{ class }} extends AbstractRepository implements {{ interfaceShortName }}Contract
+{
+    protected string $model = {{ modelShortName }}::class;
+
+    // ...
+}
