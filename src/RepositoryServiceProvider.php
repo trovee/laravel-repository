@@ -10,8 +10,6 @@ use Trovee\Repository\Managers\RegistryManager;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
-
-
     public function register()
     {
         $this->publishes([
@@ -66,7 +64,4 @@ class RepositoryServiceProvider extends ServiceProvider
             $this->app->bind($abstract, $concrete);
         }
     }
-
-
-
 }

@@ -26,12 +26,11 @@ class RepositoryMakeCommand extends Command
 
         $target = Str::replace($this->getModelNamespace(), '', $model);
 
-        if(!Str::startsWith($model, $this->getModelNamespace())) {
+        if (! Str::startsWith($model, $this->getModelNamespace())) {
             $model = $this->getModelNamespace().$model;
         }
 
-
-        if(! class_exists($model)) {
+        if (! class_exists($model)) {
             $this->call('make:model', [
                 'name' => $target,
                 '--factory' => true,
@@ -69,7 +68,7 @@ class RepositoryMakeCommand extends Command
     {
         // get class as stub
         $relativePath = Str::replace($this->laravel->getNamespace(), '', $class);
-        $path = Str::replace('\\','/', app_path($relativePath).'.php');
+        $path = Str::replace('\\', '/', app_path($relativePath).'.php');
         $content = file_get_contents($path);
 
         $repository = Repository::class;
@@ -81,13 +80,12 @@ class RepositoryMakeCommand extends Command
             $target,
         ];
 
-
         $replacements = [
             'use Trovee\Repository\Attributes\Repository;'.PHP_EOL.'use App\Repositories\Contracts\PostRepositoryContract;'.PHP_EOL => '',
             '#['.class_basename($repository).'('.class_basename($target).'::class)]'.PHP_EOL => '',
             'class '.class_basename($class).' ' => '#['.class_basename($repository).'('.class_basename($target).'::class)]'
                 .PHP_EOL.'class '.class_basename($class).' ',
-            'use '.Model::class.';' => implode(PHP_EOL, array_map(fn($use) => 'use '.$use.';', $uses)),
+            'use '.Model::class.';' => implode(PHP_EOL, array_map(fn ($use) => 'use '.$use.';', $uses)),
         ];
 
         $content = Str::replace(array_keys($replacements), array_values($replacements), $content);
