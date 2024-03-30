@@ -35,6 +35,7 @@ jobs:
           commit-message: Fix styling issues
           title: Fix styling issues
           reviewers: uutkukorkmaz
+          delete-branch: true
           body: |
             This PR fixes the styling issues in the codebase.
           branch: fix-styling-issues
