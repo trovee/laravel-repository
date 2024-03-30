@@ -1,0 +1,10 @@
+<?php
+
+namespace {{ namespace }};
+
+use Trovee\Repository\Contracts\RepositoryInterface;
+
+interface {{ class }} extends RepositoryInterface
+{
+    //
+}
