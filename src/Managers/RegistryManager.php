@@ -5,8 +5,15 @@ namespace Trovee\Repository\Managers;
 use Illuminate\Config\Repository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Application;
+use ReflectionAttribute;
+use ReflectionClass;
+use ReflectionException;
+use Throwable;
+use Trovee\Repository\Attributes\Repository as RepositoryAttribute;
 use Trovee\Repository\Contracts\RepositoryInterface;
 use Trovee\Repository\Exceptions\ClassException;
+use Trovee\Repository\Exceptions\ClassNotFoundException;
+use Trovee\Repository\Exceptions\RepositoryIntegrityException;
 
 class RegistryManager
 {
@@ -66,7 +73,10 @@ class RegistryManager
             return null;
         }
 
-        throw ClassException::isNotRepository($repository);
+        /** @var RepositoryAttribute $repositoryAttribute */
+        $repositoryAttribute = $attribute->newInstance();
+
+        return $repositoryAttribute->getRepository($model);
     }
 
     public function getDefaultRepository(): RepositoryInterface
