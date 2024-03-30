@@ -10,15 +10,15 @@ class RepositoryInterfaceMakeCommand extends GeneratorCommand
 
     protected $description = 'Create a new repository interface';
 
-    protected $type = 'Repository';
+    protected $type = 'Repository Contract';
 
     protected function getStub()
     {
-        return __DIR__.'/../../stubs/repository.interface.stub';
+        return __DIR__.'/../../../stubs/repository.interface.stub';
     }
 
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace.'\Repositories';
+        return $rootNamespace.'\Repositories\Contracts';
     }
 }
