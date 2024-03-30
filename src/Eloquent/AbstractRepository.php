@@ -19,7 +19,7 @@ abstract class AbstractRepository implements RepositoryInterface
 {
     use ForwardsCalls;
 
-    protected string $modelFqcn;
+    protected string $model;
 
     protected ?Builder $query;
 
@@ -34,14 +34,14 @@ abstract class AbstractRepository implements RepositoryInterface
 
     public function proxyOf(string $model): RepositoryInterface
     {
-        $this->modelFqcn = $model;
+        $this->model = $model;
 
         return $this;
     }
 
     public function createNewBuilder(): RepositoryInterface
     {
-        $this->query = app()->make($this->modelFqcn);
+        $this->query = app()->make($this->model);
 
         return $this;
     }
@@ -68,7 +68,7 @@ abstract class AbstractRepository implements RepositoryInterface
         $result = $this->getByAttributes($attributes);
 
         if ($result->isEmpty()) {
-            throw new NoResultsFoundException($this->modelFqcn);
+            throw new NoResultsFoundException($this->model);
         }
 
         return $result;
@@ -89,7 +89,7 @@ abstract class AbstractRepository implements RepositoryInterface
         $result = $this->firstByAttributes($attributes);
 
         if (is_null($result)) {
-            throw new NoResultsFoundException($this->modelFqcn);
+            throw new NoResultsFoundException($this->model);
         }
 
         return $result;
