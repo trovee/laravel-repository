@@ -36,7 +36,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Fix styling issues
           title: Fix styling issues
-          delete-branch: true
           body: |
             This PR fixes the styling issues in the codebase.
           branch: fix-styling-issues
