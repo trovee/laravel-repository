@@ -3,11 +3,14 @@
 namespace Trovee\Repository\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Trovee\Repository\RepositoryServiceProvider;
 
 class TestCase extends Orchestra
 {
+    use WithWorkbench;
+
     protected function setUp(): void
     {
         parent::setUp();
