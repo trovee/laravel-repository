@@ -5,6 +5,7 @@ namespace Trovee\Repository\Commands\Generators;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Str;
 
+// todo: needs refactor
 class EloquentRepositoryMakeCommand extends GeneratorCommand
 {
     protected $name = 'make:repository-eloquent';
