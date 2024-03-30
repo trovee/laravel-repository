@@ -23,7 +23,7 @@ jobs:
         uses: aglipanci/laravel-pint-action@2.3.0
 
       - name: Create a new branch
-        run: git checkout -b fix-styling-issues
+        run: git checkout -b fix-styling-issues && git merge main fix-styling-issues && git push --set-upstream origin fix-styling-issues
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
@@ -36,7 +36,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Fix styling issues
           title: Fix styling issues
+          delete-branch: true
           body: |
             This PR fixes the styling issues in the codebase.
           branch: fix-styling-issues
           base: main
+
