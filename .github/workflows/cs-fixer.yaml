@@ -22,20 +22,19 @@ jobs:
       - name: Fix PHP code style issues
         uses: aglipanci/laravel-pint-action@2.3.0
 
-      - name: Create a new branch
-        run: git checkout -b fix-styling-issues && git merge main fix-styling-issues && git push --set-upstream origin fix-styling-issues
-
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Fix styling issues
+          branch: fix-styling-issues
 
       - name: Create a Pull Request
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Fix styling issues
           title: Fix styling issues
+          reviewers: uutkukorkmaz
           body: |
             This PR fixes the styling issues in the codebase.
           branch: fix-styling-issues

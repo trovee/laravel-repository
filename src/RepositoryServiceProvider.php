@@ -20,7 +20,6 @@ class RepositoryServiceProvider extends ServiceProvider
             __DIR__.'/../config/repository.php',
             'repository'
         );
-
         $this->commands([
             Commands\InstallCommand::class,
             Commands\RepositoryMakeCommand::class,
