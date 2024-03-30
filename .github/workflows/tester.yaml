@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, ubuntu-20.04, ubuntu-18.04, macos-latest]
+        os: [ubuntu-latest, ubuntu-20.04, macos-latest]
         php: [8.1]
         laravel: [10.*]
         stability: [prefer-stable]
