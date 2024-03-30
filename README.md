@@ -1,3 +1,4 @@
+![](https://raw.githubusercontent.com/trovee/laravel-repository/main/.github/art/banner.png)
 # Laravel Repository
 
 An up to date repository pattern implementation for Laravel 10+.
@@ -6,11 +7,7 @@ An up to date repository pattern implementation for Laravel 10+.
 
 ```bash
 composer require trovee/laravel-repository
-```
 
-### Publish the configuration file
-
-```bash
 php artisan repository:install
 ```
 
@@ -19,11 +16,11 @@ php artisan repository:install
 ### Create a new repository
 
 ```bash
-php artisan make:repository UserRepository -m
+php artisan make:repository --model=User
 ```
 
-After running the command above, you have an interface like `App\Repositories\UserRepository` and an implementation like `App\Repositories\Eloquent\UserRepository`.
-also, you can create custom repositories by implementing the `App\Repositories\UserRepository` interface. If you need to bind your custom repository to the interface, you need to update the configuration file.
+After running the command above, you have an interface like `App\Repositories\Contracts\UserRepositoryContract` and an implementation like `App\Repositories\Eloquent\UserRepository`.
+also, you can create custom repositories by implementing the `App\Repositories\Contracts\UserRepositoryContract` interface. If you need to bind your custom repository to the interface, you need to update the configuration file.
 
 
 ### Binding the repository to your model
