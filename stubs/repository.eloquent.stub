@@ -3,10 +3,10 @@
 namespace {{ namespace }};
 
 use Trovee\Repository\Eloquent\AbstractRepository;
-use {{ interface }} as {{ interfaceShortName }}Contract;
+use {{ interface }};
 use {{ model }};
 
-final class {{ class }} extends AbstractRepository implements {{ interfaceShortName }}Contract
+final class {{ class }} extends AbstractRepository implements {{ interfaceShortName }}
 {
     protected string $model = {{ modelShortName }}::class;
 

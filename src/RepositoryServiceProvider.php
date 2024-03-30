@@ -6,7 +6,6 @@ use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
-use Trovee\Repository\Commands\InstallCommand;
 use Trovee\Repository\Managers\RegistryManager;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -23,9 +22,8 @@ class RepositoryServiceProvider extends ServiceProvider
         );
 
         $this->commands([
-            InstallCommand::class,
-            Commands\Generators\RepositoryInterfaceMakeCommand::class,
-            Commands\Generators\EloquentRepositoryMakeCommand::class,
+            Commands\InstallCommand::class,
+            Commands\RepositoryMakeCommand::class,
         ]);
     }
 

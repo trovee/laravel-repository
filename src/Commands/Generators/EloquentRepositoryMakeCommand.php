@@ -35,7 +35,7 @@ class EloquentRepositoryMakeCommand extends GeneratorCommand
 
     protected function replaceInterface(&$stub, $name)
     {
-        $interface = str_replace('Eloquent\\', 'Contracts\\', $name);
+        $interface = str_replace('Eloquent\\', 'Contracts\\', $name).'Contract';
         $interfaceShortName = class_basename($interface);
         $stub = str_replace('{{ interface }}', $interface, $stub);
         $stub = str_replace('{{ interfaceShortName }}', $interfaceShortName, $stub);
