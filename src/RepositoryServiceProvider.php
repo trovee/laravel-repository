@@ -11,6 +11,7 @@ use Trovee\Repository\Managers\RegistryManager;
 class RepositoryServiceProvider extends ServiceProvider
 {
 
+
     public function register()
     {
         $this->publishes([
