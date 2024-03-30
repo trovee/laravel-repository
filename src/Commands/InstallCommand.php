@@ -3,23 +3,26 @@
 namespace Trovee\Repository\Commands;
 
 use Illuminate\Console\Command;
+use Laravel\Prompts\Table;
+use Trovee\Repository\RepositoryServiceProvider;
 
 class InstallCommand extends Command
 {
-    protected $signature = 'repository:install';
+    protected $signature = 'repository:install {--force : Overwrite any existing files} {--interactive : The command will ask which tags should be published}';
 
     protected $description = 'Install Trovee Repository package';
 
     public function handle()
     {
-        $this->info('Installing Trovee Repository package...');
 
-        $this->info('Publishing configuration...');
+        $this->components->info('Installing Trovee Repository package...');
+
         $this->call('vendor:publish', [
-            '--provider' => "Trovee\Repository\RepositoryServiceProvider",
-            '--tag' => 'config',
-        ]);
+            '--provider' => RepositoryServiceProvider::class,
+            '--tag' => 'repository-config',
+        ] + ($this->getOptions()));
 
-        $this->info('Trovee Repository package installed successfully.');
+
+        $this->components->info('Trovee Repository package installed successfully.');
     }
 }
