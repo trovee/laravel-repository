@@ -28,6 +28,7 @@ class RepositoryManager
         if (! is_null($repository)) {
             return $repository;
         }
+
         // if not, look for the repository in the registry
         // if not, create a default repository instance
         return $this->registryManager->getDefaultRepositoryAsTargetedToModel($model);
@@ -35,9 +36,9 @@ class RepositoryManager
 
     public function __call(string $name, array $arguments)
     {
-     return match (true){
+        return match (true) {
             method_exists($this->registryManager, $name) => $this->forwardCallTo($this->registryManager, $name, $arguments),
             default => $this->$name(...$arguments),
         };
-     }
+    }
 }

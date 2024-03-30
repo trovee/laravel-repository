@@ -6,7 +6,6 @@ use Illuminate\Console\Command;
 
 class InstallCommand extends Command
 {
-
     protected $signature = 'repository:install';
 
     protected $description = 'Install Trovee Repository package';
@@ -18,10 +17,9 @@ class InstallCommand extends Command
         $this->info('Publishing configuration...');
         $this->call('vendor:publish', [
             '--provider' => "Trovee\Repository\RepositoryServiceProvider",
-            '--tag' => "config"
+            '--tag' => 'config',
         ]);
 
         $this->info('Trovee Repository package installed successfully.');
     }
-
 }

@@ -33,11 +33,11 @@ class RegistryManager
      */
     public function getDefaultRepositoryAsTargetedToModel(string $model)
     {
-        if (!class_exists($model)) {
+        if (! class_exists($model)) {
             throw new ClassNotFoundException($model);
         }
 
-        if (!is_subclass_of($model, Model::class)) {
+        if (! is_subclass_of($model, Model::class)) {
             throw new RepositoryIntegrityException(
                 fqcn: $model,
                 verb: 'extends',
@@ -56,7 +56,7 @@ class RegistryManager
      */
     public function resolveRepositoryAttribute(string $model): ?RepositoryInterface
     {
-        if(!class_exists($model)){
+        if (! class_exists($model)) {
             return null;
         }
 

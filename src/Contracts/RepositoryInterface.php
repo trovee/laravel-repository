@@ -2,7 +2,6 @@
 
 namespace Trovee\Repository\Contracts;
 
-
 use Illuminate\Contracts\Support\Arrayable;
 
 interface RepositoryInterface
@@ -26,5 +25,4 @@ interface RepositoryInterface
     public function first(): ?Arrayable;
 
     public function firstOrFail(): Arrayable;
-
 }

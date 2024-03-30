@@ -22,6 +22,3 @@ class RepositoryInterfaceMakeCommand extends GeneratorCommand
         return $rootNamespace.'\Repositories';
     }
 }
-{
-
-}

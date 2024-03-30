@@ -39,9 +39,8 @@ class Repository
     protected function validateRepository(): void
     {
         $exception = match (true) {
-            !interface_exists($this->repositoryFqcn) => new ClassNotFoundException($this->repositoryFqcn),
-            !is_subclass_of($this->repositoryFqcn, RepositoryInterface::class) =>
-            new RepositoryIntegrityException(
+            ! interface_exists($this->repositoryFqcn) => new ClassNotFoundException($this->repositoryFqcn),
+            ! is_subclass_of($this->repositoryFqcn, RepositoryInterface::class) => new RepositoryIntegrityException(
                 action: 'validate',
                 fqcn: $this->repositoryFqcn,
                 verb: 'implements',
@@ -50,7 +49,7 @@ class Repository
             default => null,
         };
 
-        if (!is_null($exception)) {
+        if (! is_null($exception)) {
             throw $exception;
         }
 
