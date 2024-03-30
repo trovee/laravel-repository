@@ -59,5 +59,4 @@ class EloquentRepositoryMakeCommand extends GeneratorCommand
 
         return Str::replace([$this->getDefaultNamespace($root), 'Repository'], ['App\Models', ''], $name);
     }
-
 }

@@ -3,7 +3,6 @@
 namespace Trovee\Repository\Commands;
 
 use Illuminate\Console\Command;
-use Laravel\Prompts\Table;
 use Trovee\Repository\RepositoryServiceProvider;
 
 class InstallCommand extends Command
@@ -21,7 +20,6 @@ class InstallCommand extends Command
             '--provider' => RepositoryServiceProvider::class,
             '--tag' => 'repository-config',
         ] + ($this->getOptions()));
-
 
         $this->components->info('Trovee Repository package installed successfully.');
     }
