@@ -21,11 +21,11 @@ abstract class AbstractRepository implements RepositoryInterface
 
     protected string $model;
 
-    protected ?Builder $query;
+    protected Builder $query;
 
     public function getBuilder(): Builder
     {
-        if (is_null($this->query)) {
+        if (!isset($this->query)) {
             $this->createNewBuilder();
         }
 
@@ -116,7 +116,7 @@ abstract class AbstractRepository implements RepositoryInterface
     public function __call($method, $parameters)
     {
         return match (true) {
-            method_exists($this, $method) => $this->{$method}(...$parameters),
+            $this->isCallingExistingMethod($method) => $this->{$method}(...$parameters),
             $this->isCallingGetByColumn($method) => $this->firstByAttributes([
                 $this->getColumnNameFromMethod($method, 'getBy') => $parameters[0],
             ]),

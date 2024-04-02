@@ -4,6 +4,7 @@ namespace Trovee\Repository\Managers;
 
 use Illuminate\Support\Traits\ForwardsCalls;
 use ReflectionException;
+use Throwable;
 use Trovee\Repository\Attributes\Repository;
 use Trovee\Repository\Contracts\RepositoryInterface;
 use Trovee\Repository\Exceptions\ClassException;
@@ -19,6 +20,7 @@ class RepositoryManager
     /**
      * @throws ClassException
      * @throws ReflectionException
+     * @throws Throwable
      */
     public function get(string $model): RepositoryInterface
     {
@@ -29,7 +31,6 @@ class RepositoryManager
             return $repository;
         }
 
-        // if not, look for the repository in the registry
         // if not, create a default repository instance
         return $this->registryManager->getDefaultRepositoryAsTargetedToModel($model);
     }
