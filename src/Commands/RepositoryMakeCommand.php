@@ -4,12 +4,12 @@ namespace Trovee\Repository\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Trovee\Repository\Attributes\Repository;
 use Trovee\Repository\Commands\Generators\EloquentRepositoryMakeCommand;
 use Trovee\Repository\Commands\Generators\RepositoryInterfaceMakeCommand;
 
-/** todo: needs refactor */
 class RepositoryMakeCommand extends Command
 {
     protected $signature = 'make:repository {--model=}';
@@ -18,96 +18,209 @@ class RepositoryMakeCommand extends Command
 
     public function handle()
     {
+        $model = $this->getTargetModel();
+
+        $this->createOrPassModel($model);
+
+        [$interface, $implementation] = $this->createRepositoryElements($model);
+
+        $this->referRepositoryToModel($model, $interface, $implementation);
+
+        $this->components->info("[{$model} Repository] created successfully");
+    }
+
+    protected function getTargetModel()
+    {
         $model = $this->option('model');
 
-        if (! $model) {
+        if (!$model) {
             $model = $this->ask('What model should the repository be for?');
         }
 
-        $target = Str::replace($this->getModelNamespace(), '', $model);
+        return $this->getFullyQualifiedModel($model);
+    }
 
-        if (! Str::startsWith($model, $this->getModelNamespace())) {
-            $model = $this->getModelNamespace().$model;
-        }
+    public function convertPathToNamespace(string $path): string
+    {
+        return Str::replace('/', '\\', $path);
+    }
 
-        if (! class_exists($model)) {
+    protected function getModelNamespace(): string
+    {
+        return $this->getNamespace('Models');
+    }
+
+    protected function getContractNamespace(): string
+    {
+        return $this->getNamespace('Repositories\Contracts');
+    }
+
+    protected function getImplementationNamespace(): string
+    {
+        return $this->getNamespace('Repositories\Eloquent');
+    }
+
+    protected function getFullyQualifiedContract(string $contract): string
+    {
+        return $this->getContractNamespace().$contract;
+    }
+
+    protected function getFullyQualifiedImplementation(string $implementation): string
+    {
+        return $this->getImplementationNamespace().$implementation;
+    }
+
+    protected function removeModelNamespace(string $model): string
+    {
+        return Str::remove($this->getModelNamespace(), $model);
+    }
+
+    protected function getRootNamespace(): string
+    {
+        return $this->laravel->getNamespace();
+    }
+
+    protected function getNamespace(string $namespace): string
+    {
+        return $this->getRootNamespace().$namespace.'\\';
+    }
+
+    protected function getModelAsStub(string $model): string
+    {
+        $relativePath = Str::remove($this->getRootNamespace(), $model);
+        $path = Str::replace('\\', '/', app_path($relativePath).'.php');
+
+        return file_get_contents($path);
+    }
+
+    protected function getConfigAsStub(): string
+    {
+        return file_get_contents(config_path('repository.php'));
+    }
+
+    protected function getFullyQualifiedModel(mixed $model)
+    {
+        return $this->convertPathToNamespace(
+            Str::startsWith($model, $this->getModelNamespace())
+                ? $model
+                : $this->getModelNamespace().$model
+        );
+    }
+
+    protected function createOrPassModel(string $model)
+    {
+        if (!class_exists($model)) {
             $this->call('make:model', [
-                'name' => $target,
+                'name' => $this->removeModelNamespace($model),
                 '--factory' => true,
                 '--migration' => true,
             ]);
         }
+    }
+
+    protected function createRepositoryElements(string $model)
+    {
+        $base = $this->removeModelNamespace($model);
 
         $this->call(RepositoryInterfaceMakeCommand::class, [
-            'name' => $interface = "{$target}RepositoryContract",
+            'name' => $interface = "{$base}RepositoryContract",
         ]);
 
         $this->call(EloquentRepositoryMakeCommand::class, [
-            'name' => $implementation = "{$target}Repository",
+            'name' => $implementation = "{$base}Repository",
         ]);
 
+        return [$this->getFullyQualifiedContract($interface), $this->getFullyQualifiedImplementation($implementation)];
+    }
+
+    protected function referRepositoryToModel(string $model, string $interface, string $implementation)
+    {
+        $this->components->info('Adding repository attribute to model...');
         $this->addClassAttribute(
-            class: $model,
-            args: [
-                'contract' => $this->laravel->getNamespace().'Repositories\Contracts\\'.$interface,
-            ]
+            model: $model,
+            abstract: $interface,
         );
 
+        $this->components->info('Adding binding configuration...');
         $this->addBindingConfig(
             abstract: $interface,
             concrete: $implementation,
         );
     }
 
-    protected function getModelNamespace()
+    protected function addClassAttribute(string $model, string $abstract): void
     {
-        return $this->laravel->getNamespace().'Models\\';
-    }
+        $content = $this->getModelAsStub($model);
 
-    private function addClassAttribute(mixed $class, array $args)
-    {
-        // get class as stub
-        $relativePath = Str::replace($this->laravel->getNamespace(), '', $class);
-        $path = Str::replace('\\', '/', app_path($relativePath).'.php');
-        $content = file_get_contents($path);
+        $className = class_basename($model);
+        $useConverter = fn($use) => "use $use;";
 
-        $repository = Repository::class;
-        $target = $args['contract'];
+        $shortAbstract = class_basename($abstract);
 
-        $uses = [
-            Model::class,
-            Repository::class,
-            $target,
-        ];
+        $uses = $this->getImports($content)
+            ->merge([Repository::class, $abstract])
+            ->unique()
+            ->map($useConverter)
+            ->sort(fn($a, $b) => Str::length($a) <=> Str::length($b));
 
         $replacements = [
-            'use Trovee\Repository\Attributes\Repository;'.PHP_EOL.'use App\Repositories\Contracts\PostRepositoryContract;'.PHP_EOL => '',
-            '#['.class_basename($repository).'('.class_basename($target).'::class)]'.PHP_EOL => '',
-            'class '.class_basename($class).' ' => '#['.class_basename($repository).'('.class_basename($target).'::class)]'
-                .PHP_EOL.'class '.class_basename($class).' ',
-            'use '.Model::class.';' => implode(PHP_EOL, array_map(fn ($use) => 'use '.$use.';', $uses)),
+            '#[Repository({$shortAbstract}::class)]'.PHP_EOL => '',
+            $this->getImports($content)->map($useConverter)->implode(PHP_EOL) => $uses->implode(PHP_EOL),
+            "class {$className} " => "#[Repository({$shortAbstract}::class)]".PHP_EOL."class {$className} ",
         ];
 
         $content = Str::replace(array_keys($replacements), array_values($replacements), $content);
 
-        file_put_contents($path, $content);
+        file_put_contents(app_path($this->removeModelNamespace('Models\\'.$model).'.php'), $content);
     }
 
-    private function addBindingConfig(string $abstract, string $concrete)
+    protected function getImports(string $content): Collection
     {
+        preg_match_all('/use (.*);/', $content, $matches);
+
+        return collect($matches[1])->filter(fn($use) => $this->isFqcn($use));
+    }
+
+    protected function isFqcn(string $class): bool
+    {
+        return Str::contains($class, '\\');
+    }
+
+    protected function addBindingConfig(string $abstract, string $concrete)
+    {
+        $config = $this->getBindings($content = $this->getConfigAsStub())
+            ->put($abstract, $concrete)
+            ->unique()
+            ->map(fn($concrete, $abstract) => "\t\t{$abstract}::class => {$concrete}::class,")
+            ->values()
+            ->toArray();
+
+        usort($config, fn($a, $b) => Str::startsWith($a, '//') > Str::startsWith($b, '//'));
+
+        $config = implode(PHP_EOL, $config);
+
+
         $keyword = "'bindings' => [";
-        $path = config_path('repository.php');
-        $content = file_get_contents($path);
 
-        $abstract = $this->laravel->getNamespace().'Repositories\Contracts\\'.$abstract.'::class';
-        $concrete = $this->laravel->getNamespace().'Repositories\Eloquent\\'.$concrete.'::class';
+        $content = preg_replace(
+            '/'.preg_quote($keyword).'(.*)\]\,/s',
+            $keyword.PHP_EOL.$config.PHP_EOL."\t],",
+            $content,
+            1
+        );
 
-        $replacements = [
-            $keyword => $keyword.PHP_EOL."        {$abstract} => {$concrete},".PHP_EOL,
-        ];
+        file_put_contents(config_path('repository.php'), $content);
+    }
 
-        $content = Str::replace(array_keys($replacements), array_values($replacements), $content);
+    protected function getBindings(string $content): Collection
+    {
+        preg_match_all('/\'bindings\' => \[(.*)\]/s', $content, $matches);
 
-        file_put_contents($path, $content);
+        $clear = fn($binding) => Str::remove(['::class', ','], trim($binding));
+
+        return collect(explode(PHP_EOL, $matches[1][0]))
+            ->map(fn($binding) => explode(' => ', $binding))
+            ->reject(fn($binding) => empty($binding) || count($binding) < 2)
+            ->mapWithKeys(fn($binding) => [$clear($binding[0]) => $clear($binding[1])]);
     }
 }
