@@ -41,7 +41,9 @@ abstract class AbstractRepository implements RepositoryInterface
 
     public function createNewBuilder(): RepositoryInterface
     {
-        $this->query = app()->make($this->model);
+        /** @var Model $model */
+        $model = app()->make($this->model);
+        $this->query = $model->newQuery();
 
         return $this;
     }
