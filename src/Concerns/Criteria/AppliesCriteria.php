@@ -19,7 +19,7 @@ trait AppliesCriteria
     final protected function bootAppliesCriteria(): void
     {
         $this->criteria = collect($this->criteria)
-            ->map(fn($criteria) => $this->resolveCriteria($criteria))
+            ->map(fn ($criteria) => $this->resolveCriteria($criteria))
             ->toArray();
     }
 
@@ -71,7 +71,7 @@ trait AppliesCriteria
         return match (true) {
             is_string($criteria) => app()->make($criteria, $args),
             $criteria instanceof Closure,
-                $criteria instanceof SerializableClosure => new AnonymousCriteria($criteria, $args),
+            $criteria instanceof SerializableClosure => new AnonymousCriteria($criteria, $args),
             $criteria instanceof CriteriaInterface => $criteria,
         };
     }
