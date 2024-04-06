@@ -2,13 +2,18 @@
 
 namespace Trovee\Repository\Contracts;
 
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Contracts\Support\Arrayable;
 
 interface RepositoryInterface
 {
+    public function boot(): void;
+
     public function proxyOf(string $model): RepositoryInterface;
 
     public function createNewBuilder(): RepositoryInterface;
+
+    public function getBuilder(): Builder;
 
     public function where(array $conditions): RepositoryInterface;
 

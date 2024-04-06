@@ -3,7 +3,6 @@
 namespace Trovee\Repository\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Trovee\Repository\Attributes\Repository;
@@ -33,7 +32,7 @@ class RepositoryMakeCommand extends Command
     {
         $model = $this->option('model');
 
-        if (!$model) {
+        if (! $model) {
             $model = $this->ask('What model should the repository be for?');
         }
 
@@ -109,7 +108,7 @@ class RepositoryMakeCommand extends Command
 
     protected function createOrPassModel(string $model)
     {
-        if (!class_exists($model)) {
+        if (! class_exists($model)) {
             $this->call('make:model', [
                 'name' => $this->removeModelNamespace($model),
                 '--factory' => true,
@@ -153,7 +152,7 @@ class RepositoryMakeCommand extends Command
         $content = $this->getModelAsStub($model);
 
         $className = class_basename($model);
-        $useConverter = fn($use) => "use $use;";
+        $useConverter = fn ($use) => "use $use;";
 
         $shortAbstract = class_basename($abstract);
 
@@ -161,7 +160,7 @@ class RepositoryMakeCommand extends Command
             ->merge([Repository::class, $abstract])
             ->unique()
             ->map($useConverter)
-            ->sort(fn($a, $b) => Str::length($a) <=> Str::length($b));
+            ->sort(fn ($a, $b) => Str::length($a) <=> Str::length($b));
 
         $replacements = [
             '#[Repository({$shortAbstract}::class)]'.PHP_EOL => '',
@@ -178,7 +177,7 @@ class RepositoryMakeCommand extends Command
     {
         preg_match_all('/use (.*);/', $content, $matches);
 
-        return collect($matches[1])->filter(fn($use) => $this->isFqcn($use));
+        return collect($matches[1])->filter(fn ($use) => $this->isFqcn($use));
     }
 
     protected function isFqcn(string $class): bool
@@ -191,14 +190,13 @@ class RepositoryMakeCommand extends Command
         $config = $this->getBindings($content = $this->getConfigAsStub())
             ->put($abstract, $concrete)
             ->unique()
-            ->map(fn($concrete, $abstract) => "\t\t{$abstract}::class => {$concrete}::class,")
+            ->map(fn ($concrete, $abstract) => "\t\t{$abstract}::class => {$concrete}::class,")
             ->values()
             ->toArray();
 
-        usort($config, fn($a, $b) => Str::startsWith($a, '//') > Str::startsWith($b, '//'));
+        usort($config, fn ($a, $b) => Str::startsWith($a, '//') > Str::startsWith($b, '//'));
 
         $config = implode(PHP_EOL, $config);
-
 
         $keyword = "'bindings' => [";
 
@@ -216,11 +214,11 @@ class RepositoryMakeCommand extends Command
     {
         preg_match_all('/\'bindings\' => \[(.*)\]/s', $content, $matches);
 
-        $clear = fn($binding) => Str::remove(['::class', ','], trim($binding));
+        $clear = fn ($binding) => Str::remove(['::class', ','], trim($binding));
 
         return collect(explode(PHP_EOL, $matches[1][0]))
-            ->map(fn($binding) => explode(' => ', $binding))
-            ->reject(fn($binding) => empty($binding) || count($binding) < 2)
-            ->mapWithKeys(fn($binding) => [$clear($binding[0]) => $clear($binding[1])]);
+            ->map(fn ($binding) => explode(' => ', $binding))
+            ->reject(fn ($binding) => count($binding) < 2)
+            ->mapWithKeys(fn ($binding) => [$clear($binding[0]) => $clear($binding[1])]);
     }
 }

@@ -2,14 +2,16 @@
 
 namespace Trovee\Repository\Eloquent;
 
-use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\ForwardsCalls;
+use Laravel\SerializableClosure\Exceptions\PhpVersionNotSupportedException;
+use Trovee\Repository\Concerns\BootsTraits;
+use Trovee\Repository\Concerns\Criteria\AppliesCriteria;
+use Trovee\Repository\Concerns\CRUD\HasReadOperations;
 use Trovee\Repository\Contracts\RepositoryInterface;
-use Trovee\Repository\Exceptions\NoResultsFoundException;
 
 /**
  * @method ?Model getById(int $id)
@@ -17,19 +19,27 @@ use Trovee\Repository\Exceptions\NoResultsFoundException;
  */
 abstract class AbstractRepository implements RepositoryInterface
 {
+    use AppliesCriteria;
+    use BootsTraits;
     use ForwardsCalls;
+    use HasReadOperations;
 
     protected string $model;
 
     protected Builder $query;
 
-    public function getBuilder(): Builder
+    /**
+     * @throws BindingResolutionException
+     */
+    final public function boot(): void
     {
-        if (!isset($this->query)) {
-            $this->createNewBuilder();
+        $this->createNewBuilder();
+        $this->bootTraits();
+
+        if (method_exists($this, 'onBoot')) { // todo: convert here to hook call
+            $this->onBoot();
         }
 
-        return $this->query;
     }
 
     public function proxyOf(string $model): RepositoryInterface
@@ -39,82 +49,49 @@ abstract class AbstractRepository implements RepositoryInterface
         return $this;
     }
 
+    /**
+     * @throws BindingResolutionException
+     */
+    public function getBuilder(): Builder
+    {
+        if (! isset($this->query)) {
+            $this->createNewBuilder();
+        }
+
+        return $this->query;
+    }
+
+    /**
+     * @throws BindingResolutionException
+     */
     public function createNewBuilder(): RepositoryInterface
     {
         /** @var Model $model */
         $model = app()->make($this->model);
         $this->query = $model->newQuery();
 
+        if (count($this->appliedCriteria)) {
+            $this->clearAppliedCriteria();
+        }
+
         return $this;
     }
 
+    /**
+     * @throws BindingResolutionException
+     * @throws PhpVersionNotSupportedException
+     */
     public function where(array $conditions): RepositoryInterface
     {
-        $this->query = $this->getBuilder()->where($conditions);
+        $this->apply(fn (Builder $builder) => $builder->where($conditions));
 
         return $this;
     }
 
-    public function getByAttributes(array $attributes): Collection
-    {
-        $this->where($attributes);
-
-        return $this->getBuilder()->get();
-    }
-
     /**
-     * @throws NoResultsFoundException
+     * @throws BindingResolutionException
+     * @throws PhpVersionNotSupportedException
      */
-    public function getOrFailByAttributes(array $attributes): Collection
-    {
-        $result = $this->getByAttributes($attributes);
-
-        if ($result->isEmpty()) {
-            throw new NoResultsFoundException($this->model);
-        }
-
-        return $result;
-    }
-
-    public function firstByAttributes(array $attributes): ?Model
-    {
-        $this->where($attributes);
-
-        return $this->getBuilder()->first();
-    }
-
-    /**
-     * @throws NoResultsFoundException
-     */
-    public function firstOrFailByAttributes(array $attributes): Model
-    {
-        $result = $this->firstByAttributes($attributes);
-
-        if (is_null($result)) {
-            throw new NoResultsFoundException($this->model);
-        }
-
-        return $result;
-    }
-
-    public function all(): Collection
-    {
-        return $this->getBuilder()->get();
-    }
-
-    public function first(): ?Model
-    {
-        return $this->getBuilder()->first();
-    }
-
-    /**
-     * @throws NoResultsFoundException
-     */
-    public function firstOrFail(): Arrayable
-    {
-        return $this->firstOrFailByAttributes([]);
-    }
-
     public function __call($method, $parameters)
     {
         return match (true) {
@@ -124,7 +101,6 @@ abstract class AbstractRepository implements RepositoryInterface
             ]),
             default => $this->forwardCallTo($this->getBuilder(), $method, $parameters),
         };
-
     }
 
     protected function isCallingExistingMethod(string $method): bool
@@ -132,7 +108,7 @@ abstract class AbstractRepository implements RepositoryInterface
         return method_exists($this, $method);
     }
 
-    protected function isCallingSomethingByColumn(string $method, string $prefix): bool
+    protected function isCallingSomethingBy(string $method, string $prefix): bool
     {
         return Str::startsWith($method, $prefix);
     }
@@ -144,6 +120,6 @@ abstract class AbstractRepository implements RepositoryInterface
 
     protected function isCallingGetByColumn(string $method): bool
     {
-        return $this->isCallingSomethingByColumn($method, 'getBy');
+        return $this->isCallingSomethingBy($method, 'getBy');
     }
 }

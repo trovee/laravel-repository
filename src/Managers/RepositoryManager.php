@@ -5,9 +5,9 @@ namespace Trovee\Repository\Managers;
 use Illuminate\Support\Traits\ForwardsCalls;
 use ReflectionException;
 use Throwable;
-use Trovee\Repository\Attributes\Repository;
 use Trovee\Repository\Contracts\RepositoryInterface;
 use Trovee\Repository\Exceptions\ClassException;
+use Trovee\Repository\Exceptions\RepositoryIntegrityException;
 
 class RepositoryManager
 {
@@ -24,21 +24,31 @@ class RepositoryManager
      */
     public function get(string $model): RepositoryInterface
     {
-        // look for the given model has Trovee\Repository\Attributes\Repository attribute
-        $repository = $this->registryManager->resolveRepositoryAttribute($model);
+        $repository = $this->registryManager->resolveRepositoryAttribute($model)
+            ?? $this->registryManager->getDefaultRepositoryAsTargetedToModel($model);
 
-        if (! is_null($repository)) {
-            return $repository;
+        if (! ($repository instanceof RepositoryInterface)) {
+            throw new RepositoryIntegrityException(
+                action: 'boot',
+                fqcn: get_class($repository),
+                verb: 'implement',
+                inheritance: RepositoryInterface::class
+            );
         }
 
-        // if not, create a default repository instance
-        return $this->registryManager->getDefaultRepositoryAsTargetedToModel($model);
+        $repository->boot();
+
+        return $repository;
     }
 
     public function __call(string $name, array $arguments)
     {
         return match (true) {
-            method_exists($this->registryManager, $name) => $this->forwardCallTo($this->registryManager, $name, $arguments),
+            method_exists($this->registryManager, $name) => $this->forwardCallTo(
+                $this->registryManager,
+                $name,
+                $arguments
+            ),
             default => $this->$name(...$arguments),
         };
     }
