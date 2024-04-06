@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\ForwardsCalls;
+use Laravel\SerializableClosure\Exceptions\PhpVersionNotSupportedException;
 use Trovee\Repository\Concerns\BootsTraits;
+use Trovee\Repository\Concerns\Criteria\AppliesCriteria;
+use Trovee\Repository\Concerns\CRUD\HasReadOperations;
 use Trovee\Repository\Contracts\RepositoryInterface;
 use Trovee\Repository\Exceptions\NoResultsFoundException;
 
@@ -18,6 +21,7 @@ use Trovee\Repository\Exceptions\NoResultsFoundException;
  */
 abstract class AbstractRepository implements RepositoryInterface
 {
+    use AppliesCriteria;
     use BootsTraits;
     use ForwardsCalls;
 
@@ -67,12 +71,20 @@ abstract class AbstractRepository implements RepositoryInterface
         $model = app()->make($this->model);
         $this->query = $model->newQuery();
 
+        if (count($this->appliedCriteria)) {
+            $this->clearAppliedCriteria();
+        }
+
         return $this;
     }
 
+    /**
+     * @throws BindingResolutionException
+     * @throws PhpVersionNotSupportedException
+     */
     public function where(array $conditions): RepositoryInterface
     {
-        $this->query = $this->getBuilder()->where($conditions);
+        $this->apply(fn(Builder $builder) => $builder->where($conditions));
 
         return $this;
     }
