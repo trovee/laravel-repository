@@ -2,8 +2,8 @@
 
 namespace Trovee\Repository\Contracts;
 
-use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Database\Query\Builder;
+use Illuminate\Contracts\Support\Arrayable;
 
 interface RepositoryInterface
 {

@@ -36,7 +36,7 @@ abstract class AbstractRepository implements RepositoryInterface
         $this->createNewBuilder();
         $this->bootTraits();
 
-        if(method_exists($this, 'onBoot')) { // todo: convert here to hook call
+        if (method_exists($this, 'onBoot')) { // todo: convert here to hook call
             $this->onBoot();
         }
 
@@ -83,7 +83,7 @@ abstract class AbstractRepository implements RepositoryInterface
      */
     public function where(array $conditions): RepositoryInterface
     {
-        $this->apply(fn(Builder $builder) => $builder->where($conditions));
+        $this->apply(fn (Builder $builder) => $builder->where($conditions));
 
         return $this;
     }

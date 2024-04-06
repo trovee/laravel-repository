@@ -7,6 +7,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Laravel\SerializableClosure\Exceptions\PhpVersionNotSupportedException;
 use Laravel\SerializableClosure\SerializableClosure;
 use Trovee\Repository\Contracts\CriteriaInterface;
+use Trovee\Repository\Criteria\AnonymousCriteria;
 
 trait AppliesCriteria
 {
@@ -14,10 +15,10 @@ trait AppliesCriteria
 
     protected array $appliedCriteria = [];
 
-    protected function bootAppliesCriteria(): void
+    final protected function bootAppliesCriteria(): void
     {
         $this->criteria = collect($this->criteria)
-            ->map(fn ($criteria) => $this->resolveCriteria($criteria))
+            ->map(fn($criteria) => $this->resolveCriteria($criteria))
             ->toArray();
     }
 
@@ -25,7 +26,7 @@ trait AppliesCriteria
      * @throws BindingResolutionException
      * @throws PhpVersionNotSupportedException
      */
-    protected function applyCriteria(): void
+    final protected function applyCriteria(): void
     {
         foreach ($this->criteria as $criteria) {
             if ($this->criteriaApplied($criteria)) {
@@ -36,12 +37,12 @@ trait AppliesCriteria
         }
     }
 
-    protected function criteriaApplied(CriteriaInterface|SerializableClosure $criteria): bool
+    final public function criteriaApplied(CriteriaInterface $criteria): bool
     {
         return isset($this->appliedCriteria[$this->hashCriteria($criteria)]);
     }
 
-    protected function hashCriteria(CriteriaInterface|SerializableClosure $criteria): string
+    final protected function hashCriteria(CriteriaInterface $criteria): string
     {
         return base64_encode(md5(serialize($criteria)));
     }
@@ -50,7 +51,7 @@ trait AppliesCriteria
      * @throws BindingResolutionException
      * @throws PhpVersionNotSupportedException
      */
-    public function pushCriteria(string|CriteriaInterface|Closure|SerializableClosure $criteria): static
+    final public function pushCriteria(string|CriteriaInterface|Closure|SerializableClosure $criteria): static
     {
         $this->criteria[] = $this->resolveCriteria($criteria);
 
@@ -61,14 +62,15 @@ trait AppliesCriteria
      * @throws BindingResolutionException
      * @throws PhpVersionNotSupportedException
      */
-    public function resolveCriteria(
-        string|CriteriaInterface|Closure|SerializableClosure $criteria
+    final public function resolveCriteria(
+        string|CriteriaInterface|Closure|SerializableClosure $criteria,
+        ...$args
     ): CriteriaInterface|SerializableClosure {
         return match (true) {
-            is_string($criteria) => app()->make($criteria),
-            $criteria instanceof Closure => new SerializableClosure($criteria),
-            $criteria instanceof CriteriaInterface,
-            $criteria instanceof SerializableClosure => $criteria,
+            is_string($criteria) => app()->make($criteria, $args),
+            $criteria instanceof Closure,
+                $criteria instanceof SerializableClosure => new AnonymousCriteria($criteria, $args),
+            $criteria instanceof CriteriaInterface => $criteria,
         };
     }
 
@@ -76,21 +78,18 @@ trait AppliesCriteria
      * @throws BindingResolutionException
      * @throws PhpVersionNotSupportedException
      */
-    public function apply(string|CriteriaInterface|Closure|SerializableClosure $criteria): static
+    final public function apply(string|CriteriaInterface|Closure|SerializableClosure $criteria, ...$args): static
     {
-        $criteria = $this->resolveCriteria($criteria);
+        $criteria = $this->resolveCriteria($criteria, ...$args);
 
-        $this->query = match (true) {
-            $criteria instanceof CriteriaInterface => $criteria->apply($this->getBuilder()),
-            $criteria instanceof SerializableClosure => value($criteria->getClosure(), $this->getBuilder()),
-        };
+        $this->query = $criteria->apply($this->getBuilder());
 
         $this->appliedCriteria[$this->hashCriteria($criteria)] = $criteria;
 
         return $this;
     }
 
-    private function clearAppliedCriteria()
+    final protected function clearAppliedCriteria(): void
     {
         $this->appliedCriteria = [];
     }
