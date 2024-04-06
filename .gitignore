@@ -2,7 +2,6 @@
 .phpunit.cache
 build
 coverage
-docs
 phpunit.xml.dist
 phpstan.neon
 vendor

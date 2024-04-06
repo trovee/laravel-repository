@@ -18,6 +18,7 @@
     },
     "minimum-stability": "stable",
     "require": {
+        "php": "^8.1",
         "illuminate/contracts": "^10.48",
         "illuminate/database": "^10.48",
         "illuminate/support": "^10.48"
