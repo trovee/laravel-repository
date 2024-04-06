@@ -7,6 +7,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Laravel\SerializableClosure\Exceptions\PhpVersionNotSupportedException;
 use Laravel\SerializableClosure\SerializableClosure;
 use Trovee\Repository\Contracts\CriteriaInterface;
+use Trovee\Repository\Contracts\RepositoryInterface;
 use Trovee\Repository\Criteria\AnonymousCriteria;
 
 trait AppliesCriteria
@@ -51,8 +52,9 @@ trait AppliesCriteria
      * @throws BindingResolutionException
      * @throws PhpVersionNotSupportedException
      */
-    final public function pushCriteria(string|CriteriaInterface|Closure|SerializableClosure $criteria): static
-    {
+    final public function pushCriteria(
+        string|CriteriaInterface|Closure|SerializableClosure $criteria
+    ): RepositoryInterface {
         $this->criteria[] = $this->resolveCriteria($criteria);
 
         return $this;
@@ -78,8 +80,10 @@ trait AppliesCriteria
      * @throws BindingResolutionException
      * @throws PhpVersionNotSupportedException
      */
-    final public function apply(string|CriteriaInterface|Closure|SerializableClosure $criteria, ...$args): static
-    {
+    final public function apply(
+        string|CriteriaInterface|Closure|SerializableClosure $criteria,
+        ...$args
+    ): RepositoryInterface {
         $criteria = $this->resolveCriteria($criteria, ...$args);
 
         $this->query = $criteria->apply($this->getBuilder());
