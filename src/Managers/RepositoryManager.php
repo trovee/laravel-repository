@@ -24,15 +24,21 @@ class RepositoryManager
      */
     public function get(string $model): RepositoryInterface
     {
-        // look for the given model has Trovee\Repository\Attributes\Repository attribute
-        $repository = $this->registryManager->resolveRepositoryAttribute($model);
+        $repository = $this->registryManager->resolveRepositoryAttribute($model)
+            ?? $this->registryManager->getDefaultRepositoryAsTargetedToModel($model);
 
-        if (! is_null($repository)) {
-            return $repository;
+        if (! ($repository instanceof RepositoryInterface)) {
+            throw new RepositoryIntegrityException(
+                action: 'boot',
+                fqcn: get_class($repository),
+                verb: 'implement',
+                inheritance: RepositoryInterface::class
+            );
         }
 
-        // if not, create a default repository instance
-        return $this->registryManager->getDefaultRepositoryAsTargetedToModel($model);
+        $repository->boot();
+
+        return $repository;
     }
 
     public function __call(string $name, array $arguments)

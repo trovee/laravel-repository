@@ -2,12 +2,13 @@
 
 namespace Trovee\Repository\Eloquent;
 
-use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\ForwardsCalls;
+use Trovee\Repository\Concerns\BootsTraits;
 use Trovee\Repository\Contracts\RepositoryInterface;
 use Trovee\Repository\Exceptions\NoResultsFoundException;
 
@@ -17,19 +18,25 @@ use Trovee\Repository\Exceptions\NoResultsFoundException;
  */
 abstract class AbstractRepository implements RepositoryInterface
 {
+    use BootsTraits;
     use ForwardsCalls;
 
     protected string $model;
 
     protected Builder $query;
 
-    public function getBuilder(): Builder
+    /**
+     * @throws BindingResolutionException
+     */
+    final public function boot(): void
     {
-        if (!isset($this->query)) {
-            $this->createNewBuilder();
+        $this->createNewBuilder();
+        $this->bootTraits();
+
+        if(method_exists($this, 'onBoot')) { // todo: convert here to hook call
+            $this->onBoot();
         }
 
-        return $this->query;
     }
 
     public function proxyOf(string $model): RepositoryInterface
@@ -39,6 +46,21 @@ abstract class AbstractRepository implements RepositoryInterface
         return $this;
     }
 
+    /**
+     * @throws BindingResolutionException
+     */
+    public function getBuilder(): Builder
+    {
+        if (! isset($this->query)) {
+            $this->createNewBuilder();
+        }
+
+        return $this->query;
+    }
+
+    /**
+     * @throws BindingResolutionException
+     */
     public function createNewBuilder(): RepositoryInterface
     {
         /** @var Model $model */

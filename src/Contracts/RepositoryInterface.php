@@ -6,6 +6,8 @@ use Illuminate\Contracts\Support\Arrayable;
 
 interface RepositoryInterface
 {
+    public function boot(): void;
+
     public function proxyOf(string $model): RepositoryInterface;
 
     public function createNewBuilder(): RepositoryInterface;
