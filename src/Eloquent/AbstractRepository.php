@@ -4,7 +4,6 @@ namespace Trovee\Repository\Eloquent;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\ForwardsCalls;
@@ -13,7 +12,6 @@ use Trovee\Repository\Concerns\BootsTraits;
 use Trovee\Repository\Concerns\Criteria\AppliesCriteria;
 use Trovee\Repository\Concerns\CRUD\HasReadOperations;
 use Trovee\Repository\Contracts\RepositoryInterface;
-use Trovee\Repository\Exceptions\NoResultsFoundException;
 
 /**
  * @method ?Model getById(int $id)
@@ -103,7 +101,6 @@ abstract class AbstractRepository implements RepositoryInterface
             ]),
             default => $this->forwardCallTo($this->getBuilder(), $method, $parameters),
         };
-
     }
 
     protected function isCallingExistingMethod(string $method): bool
@@ -111,7 +108,7 @@ abstract class AbstractRepository implements RepositoryInterface
         return method_exists($this, $method);
     }
 
-    protected function isCallingSomethingByColumn(string $method, string $prefix): bool
+    protected function isCallingSomethingBy(string $method, string $prefix): bool
     {
         return Str::startsWith($method, $prefix);
     }
@@ -123,6 +120,6 @@ abstract class AbstractRepository implements RepositoryInterface
 
     protected function isCallingGetByColumn(string $method): bool
     {
-        return $this->isCallingSomethingByColumn($method, 'getBy');
+        return $this->isCallingSomethingBy($method, 'getBy');
     }
 }

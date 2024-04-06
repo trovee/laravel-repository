@@ -3,6 +3,7 @@
 namespace Trovee\Repository\Contracts;
 
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Database\Query\Builder;
 
 interface RepositoryInterface
 {
@@ -11,6 +12,8 @@ interface RepositoryInterface
     public function proxyOf(string $model): RepositoryInterface;
 
     public function createNewBuilder(): RepositoryInterface;
+
+    public function getBuilder(): Builder;
 
     public function where(array $conditions): RepositoryInterface;
 

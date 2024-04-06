@@ -5,9 +5,9 @@ namespace Trovee\Repository\Managers;
 use Illuminate\Support\Traits\ForwardsCalls;
 use ReflectionException;
 use Throwable;
-use Trovee\Repository\Attributes\Repository;
 use Trovee\Repository\Contracts\RepositoryInterface;
 use Trovee\Repository\Exceptions\ClassException;
+use Trovee\Repository\Exceptions\RepositoryIntegrityException;
 
 class RepositoryManager
 {
@@ -44,7 +44,11 @@ class RepositoryManager
     public function __call(string $name, array $arguments)
     {
         return match (true) {
-            method_exists($this->registryManager, $name) => $this->forwardCallTo($this->registryManager, $name, $arguments),
+            method_exists($this->registryManager, $name) => $this->forwardCallTo(
+                $this->registryManager,
+                $name,
+                $arguments
+            ),
             default => $this->$name(...$arguments),
         };
     }
