@@ -24,6 +24,7 @@ abstract class AbstractRepository implements RepositoryInterface
     use AppliesCriteria;
     use BootsTraits;
     use ForwardsCalls;
+    use HasReadOperations;
 
     protected string $model;
 
@@ -89,66 +90,10 @@ abstract class AbstractRepository implements RepositoryInterface
         return $this;
     }
 
-    public function getByAttributes(array $attributes): Collection
-    {
-        $this->where($attributes);
-
-        return $this->getBuilder()->get();
-    }
-
     /**
-     * @throws NoResultsFoundException
+     * @throws BindingResolutionException
+     * @throws PhpVersionNotSupportedException
      */
-    public function getOrFailByAttributes(array $attributes): Collection
-    {
-        $result = $this->getByAttributes($attributes);
-
-        if ($result->isEmpty()) {
-            throw new NoResultsFoundException($this->model);
-        }
-
-        return $result;
-    }
-
-    public function firstByAttributes(array $attributes): ?Model
-    {
-        $this->where($attributes);
-
-        return $this->getBuilder()->first();
-    }
-
-    /**
-     * @throws NoResultsFoundException
-     */
-    public function firstOrFailByAttributes(array $attributes): Model
-    {
-        $result = $this->firstByAttributes($attributes);
-
-        if (is_null($result)) {
-            throw new NoResultsFoundException($this->model);
-        }
-
-        return $result;
-    }
-
-    public function all(): Collection
-    {
-        return $this->getBuilder()->get();
-    }
-
-    public function first(): ?Model
-    {
-        return $this->getBuilder()->first();
-    }
-
-    /**
-     * @throws NoResultsFoundException
-     */
-    public function firstOrFail(): Arrayable
-    {
-        return $this->firstOrFailByAttributes([]);
-    }
-
     public function __call($method, $parameters)
     {
         return match (true) {
