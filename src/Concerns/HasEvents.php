@@ -37,9 +37,9 @@ trait HasEvents
     private function triggerClassHook(string $hook, ...$args): void
     {
         if (class_exists($hook)) {
-            $hook = app()->make($hook, ['repository' => $this, ...$args]);
+            $instance = app()->make($hook, ['repository' => $this, ...$args]);
 
-            if (! ($hook instanceof HookInterface)) {
+            if (! ($instance instanceof HookInterface)) {
                 throw new RepositoryIntegrityException(
                     action: 'trigger hook',
                     fqcn: $hook,
@@ -48,7 +48,7 @@ trait HasEvents
                 );
             }
 
-            $hook->onTrigger($this, ...$args);
+            $instance->onTrigger($this, ...$args);
         }
     }
 
