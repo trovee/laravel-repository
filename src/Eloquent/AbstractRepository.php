@@ -38,7 +38,7 @@ abstract class AbstractRepository implements RepositoryInterface
         $this->createNewBuilder();
         $this->bootTraits();
 
-        $this->triggerHook('boot');
+        $this->trigger('boot');
 
     }
 
@@ -127,7 +127,7 @@ abstract class AbstractRepository implements RepositoryInterface
         $result = $this->isCallingSomethingBy($method, 'getBy');
 
         if($result) {
-            $this->triggerHook('dynamic_call:'.$method);
+            $this->trigger('dynamic_call:'.$method);
         }
 
         return $result;

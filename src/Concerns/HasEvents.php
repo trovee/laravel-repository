@@ -15,7 +15,7 @@ trait HasEvents
      */
     protected array $hooks = [];
 
-    protected function triggerHook(string $hook, ...$args): void
+    protected function trigger(string $hook, ...$args): void
     {
         $this->triggerSelfRegistryHooks($hook, ...$args);
 
@@ -59,7 +59,7 @@ trait HasEvents
         }
     }
 
-    private function addHook(string $hook, string|Closure $fqcn): RepositoryInterface
+    public function addHook(string $hook, string|Closure $fqcn): RepositoryInterface
     {
         $this->hooks[$hook][] = $fqcn;
 

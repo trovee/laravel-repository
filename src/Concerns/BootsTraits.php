@@ -16,7 +16,7 @@ trait BootsTraits
             if (method_exists($class, $method) && ! in_array($method, $booted)) {
                 $this->{$method}();
                 $booted[] = $method;
-                $this->triggerHook('boot:trait:'.$trait);
+                $this->trigger('boot:trait:'.$trait);
             }
         }
     }

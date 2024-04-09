@@ -57,7 +57,7 @@ trait AppliesCriteria
     ): RepositoryInterface {
         $this->criteria[] = $this->resolveCriteria($criteria);
 
-        $this->triggerHook('criteria:pushed', $criteria);
+        $this->trigger('criteria:pushed', $criteria);
 
         return $this;
     }
@@ -69,7 +69,7 @@ trait AppliesCriteria
             ->filter(fn ($c) => $this->hashCriteria($c) !== $this->hashCriteria($criteria))
             ->toArray();
 
-        $this->triggerHook('criteria:ignored', $criteria);
+        $this->trigger('criteria:ignored', $criteria);
 
         return $this;
     }
@@ -104,7 +104,7 @@ trait AppliesCriteria
 
         $this->appliedCriteria[$this->hashCriteria($criteria)] = $criteria;
 
-        $this->triggerHook('criteria:applied', $criteria);
+        $this->trigger('criteria:applied', $criteria);
 
         return $this;
     }
@@ -113,6 +113,6 @@ trait AppliesCriteria
     {
         $this->appliedCriteria = [];
 
-        $this->triggerHook('criteria:cleared');
+        $this->trigger('criteria:cleared');
     }
 }
