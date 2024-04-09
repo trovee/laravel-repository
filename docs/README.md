@@ -5,7 +5,7 @@ This package provides a simple and easy-to-use repository pattern implementation
 Under the hood, it uses Laravel's Eloquent ORM to interact with the database. In this package we collect useful repetitive methods that we use in our projects. Feel free to contribute!
 
 
-#### Here is a example
+#### Here is an example
 ```php
 // src/Models/User.php
 namespace App\Models;

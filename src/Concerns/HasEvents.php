@@ -30,7 +30,7 @@ trait HasEvents
         $hookMethod = 'on'.Str::studly($hook);
 
         if (method_exists($this, $hookMethod)) {
-            $this->{$hookMethod}($this, ...$args);
+            $this->{$hookMethod}(...$args);
         }
     }
 
