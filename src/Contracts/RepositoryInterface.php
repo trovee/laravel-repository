@@ -5,6 +5,7 @@ namespace Trovee\Repository\Contracts;
 use Closure;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -53,7 +54,6 @@ interface RepositoryInterface
 
     public function createThenReturn(array $data): RepositoryInterface;
 
-    // HasUpdateOperations
     public function update(array $data): ?Arrayable;
 
     public function updateFromRequest(FormRequest $request): ?Arrayable;
@@ -61,4 +61,14 @@ interface RepositoryInterface
     public function updateThenReturn(array $data): RepositoryInterface;
 
     public function findAndUpdate(array $attributes, array $data): ?Arrayable;
+
+    public function delete(?Model $model = null): bool;
+
+    public function forceDelete(?Model $model = null): bool;
+
+    public function deleteThenReturn(?Model $model = null): RepositoryInterface;
+
+    public function deleteAllDuplicates(array $attributes): int;
+
+    public function deleteDuplicatesAndKeepOne(array $attributes): int;
 }
