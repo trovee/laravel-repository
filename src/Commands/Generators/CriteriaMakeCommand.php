@@ -1,6 +1,6 @@
 <?php
 
-namespace Trovee\Repository\Commands;
+namespace Trovee\Repository\Commands\Generators;
 
 use Illuminate\Console\GeneratorCommand;
 

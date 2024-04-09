@@ -1,11 +1,12 @@
 <?php
 
-namespace Trovee\Repository;
+namespace Trovee\Repository\Providers;
 
 use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
+use Trovee\Repository\Commands;
 use Trovee\Repository\Managers\RegistryManager;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -13,23 +14,24 @@ class RepositoryServiceProvider extends ServiceProvider
     public function register()
     {
         $this->publishes([
-            __DIR__.'/../config/repository.php' => config_path('repository.php'),
+            __DIR__.'/../../config/repository.php' => config_path('repository.php'),
         ], 'repository-config');
 
         $this->mergeConfigFrom(
-            __DIR__.'/../config/repository.php',
+            __DIR__.'/../../config/repository.php',
             'repository'
         );
+
         $this->commands([
             Commands\InstallCommand::class,
-            Commands\RepositoryMakeCommand::class,
-            Commands\CriteriaMakeCommand::class,
+            Commands\Generators\RepositoryMakeCommand::class,
+            Commands\Generators\CriteriaMakeCommand::class,
+            Commands\Generators\HookMakeCommand::class,
         ]);
     }
 
     public function boot(): void
     {
-        //        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->handleBindings();
 
         Model::preventLazyLoading(

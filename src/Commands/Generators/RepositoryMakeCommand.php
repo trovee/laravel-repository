@@ -1,13 +1,11 @@
 <?php
 
-namespace Trovee\Repository\Commands;
+namespace Trovee\Repository\Commands\Generators;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Trovee\Repository\Attributes\Repository;
-use Trovee\Repository\Commands\Generators\EloquentRepositoryMakeCommand;
-use Trovee\Repository\Commands\Generators\RepositoryInterfaceMakeCommand;
 
 class RepositoryMakeCommand extends Command
 {

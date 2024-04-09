@@ -20,6 +20,8 @@ trait HasReadOperations
         $this->applyCriteria();
         $this->where($attributes);
 
+        $this->trigger('op:read:getByAttributes', $attributes);
+
         return $this->getBuilder()->get();
     }
 
@@ -34,6 +36,8 @@ trait HasReadOperations
             throw new NoResultsFoundException($this->model);
         }
 
+        $this->trigger('op:read:getOrFailByAttributes', $attributes);
+
         return $result;
     }
 
@@ -45,6 +49,8 @@ trait HasReadOperations
     {
         $this->applyCriteria();
         $this->where($attributes);
+
+        $this->trigger('op:read:firstByAttributes', $attributes);
 
         return $this->getBuilder()->first();
     }
@@ -60,6 +66,8 @@ trait HasReadOperations
             throw new NoResultsFoundException($this->model);
         }
 
+        $this->trigger('op:read:firstOrFailByAttributes', $attributes);
+
         return $result;
     }
 
@@ -70,6 +78,8 @@ trait HasReadOperations
     public function all(): Collection
     {
         $this->applyCriteria();
+
+        $this->trigger('op:read:all');
 
         return $this->getBuilder()->get();
     }
@@ -82,6 +92,8 @@ trait HasReadOperations
     {
         $this->applyCriteria();
 
+        $this->trigger('op:read:first');
+
         return $this->getBuilder()->first();
     }
 
@@ -90,6 +102,8 @@ trait HasReadOperations
      */
     public function firstOrFail(): Arrayable
     {
+        $this->trigger('op:read:firstOrFail');
+
         return $this->firstOrFailByAttributes([]);
     }
 }

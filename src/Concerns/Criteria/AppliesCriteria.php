@@ -57,6 +57,20 @@ trait AppliesCriteria
     ): RepositoryInterface {
         $this->criteria[] = $this->resolveCriteria($criteria);
 
+        $this->trigger('criteria:pushed', $criteria);
+
+        return $this;
+    }
+
+    final public function ignoreCriteria(
+        string|CriteriaInterface|Closure|SerializableClosure $criteria
+    ): RepositoryInterface {
+        $this->criteria = collect($this->criteria)
+            ->filter(fn ($c) => $this->hashCriteria($c) !== $this->hashCriteria($criteria))
+            ->toArray();
+
+        $this->trigger('criteria:ignored', $criteria);
+
         return $this;
     }
 
@@ -90,11 +104,15 @@ trait AppliesCriteria
 
         $this->appliedCriteria[$this->hashCriteria($criteria)] = $criteria;
 
+        $this->trigger('criteria:applied', $criteria);
+
         return $this;
     }
 
     final protected function clearAppliedCriteria(): void
     {
         $this->appliedCriteria = [];
+
+        $this->trigger('criteria:cleared');
     }
 }
