@@ -54,7 +54,7 @@ abstract class AbstractRepository implements RepositoryInterface
      */
     public function getBuilder(): Builder
     {
-        if (!isset($this->query)) {
+        if (! isset($this->query)) {
             $this->createNewBuilder();
         }
 
@@ -80,13 +80,14 @@ abstract class AbstractRepository implements RepositoryInterface
     /**
      * @throws BindingResolutionException
      * @throws PhpVersionNotSupportedException
+     *
      * @todo Improve this method
      */
     public function where(array $conditions): RepositoryInterface
     {
         collect($conditions)
-            ->each(fn($value, $key) => $this->apply(
-                fn(Builder $builder) => $builder->where($key, $value)
+            ->each(fn ($value, $key) => $this->apply(
+                fn (Builder $builder) => $builder->where($key, $value)
             ));
 
         return $this;
@@ -126,7 +127,7 @@ abstract class AbstractRepository implements RepositoryInterface
     {
         $result = $this->isCallingSomethingBy($method, 'getBy');
 
-        if($result) {
+        if ($result) {
             $this->trigger('dynamic_call:'.$method);
         }
 
