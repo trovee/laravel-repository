@@ -25,7 +25,7 @@ beforeEach(function () {
 });
 
 it('can boot the repository', function () {
-    $this->repository->shouldReceive('triggerHook')->once()->with('boot');
+    $this->repository->shouldReceive('trigger')->once()->with('boot');
     $this->repository->boot();
 
     expect($this->repository->getBuilder())->toBe($this->builder);
