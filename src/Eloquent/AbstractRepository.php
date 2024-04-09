@@ -25,6 +25,7 @@ abstract class AbstractRepository implements RepositoryInterface
     use AppliesCriteria;
     use BootsTraits;
     use CRUD\HasCreateOperations;
+    use CRUD\HasDeleteOperations;
     use CRUD\HasReadOperations;
     use CRUD\HasUpdateOperations;
     use ForwardsCalls;

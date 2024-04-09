@@ -66,4 +66,3 @@ trait HasUpdateOperations
         return $this->update($request->validated());
     }
 }
-

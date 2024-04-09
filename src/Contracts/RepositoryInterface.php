@@ -53,7 +53,6 @@ interface RepositoryInterface
 
     public function createThenReturn(array $data): RepositoryInterface;
 
-    // HasUpdateOperations
     public function update(array $data): ?Arrayable;
 
     public function updateFromRequest(FormRequest $request): ?Arrayable;
@@ -61,4 +60,14 @@ interface RepositoryInterface
     public function updateThenReturn(array $data): RepositoryInterface;
 
     public function findAndUpdate(array $attributes, array $data): ?Arrayable;
+
+    public function delete(): bool;
+
+    public function forceDelete(): bool;
+
+    public function deleteThenReturn(): RepositoryInterface;
+
+    public function deleteAllDuplicates(array $attributes): int;
+
+    public function deleteDuplicatesAndKeepOne(array $attributes): int;
 }
