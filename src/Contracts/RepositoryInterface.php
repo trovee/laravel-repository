@@ -2,8 +2,11 @@
 
 namespace Trovee\Repository\Contracts;
 
+use Closure;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Query\Expression;
+use Illuminate\Foundation\Http\FormRequest;
 
 interface RepositoryInterface
 {
@@ -15,7 +18,12 @@ interface RepositoryInterface
 
     public function getBuilder(): Builder;
 
-    public function where(array $conditions): RepositoryInterface;
+    public function where(
+        array|Closure|Expression|string $column,
+        $operator = null,
+        $value = null,
+        $boolean = 'and'
+    ): RepositoryInterface;
 
     public function getByAttributes(array $attributes): Arrayable;
 
@@ -30,4 +38,18 @@ interface RepositoryInterface
     public function first(): ?Arrayable;
 
     public function firstOrFail(): Arrayable;
+
+    public function apply(Closure $closure): RepositoryInterface;
+
+    public function create(array $data): Arrayable;
+
+    public function createMany(array $data): Arrayable;
+
+    public function createFromRequest(FormRequest $request): Arrayable;
+
+    public function firstOrCreate(array $search, array $create): Arrayable;
+
+    public function updateOrCreate(array $search, array $update): Arrayable;
+
+    public function createThenReturn(array $data): RepositoryInterface;
 }

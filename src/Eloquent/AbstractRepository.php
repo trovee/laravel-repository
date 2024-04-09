@@ -2,16 +2,19 @@
 
 namespace Trovee\Repository\Eloquent;
 
+use Closure;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\ForwardsCalls;
 use Laravel\SerializableClosure\Exceptions\PhpVersionNotSupportedException;
 use Trovee\Repository\Concerns\BootsTraits;
 use Trovee\Repository\Concerns\Criteria\AppliesCriteria;
+use Trovee\Repository\Concerns\CRUD\HasCreateOperations;
 use Trovee\Repository\Concerns\CRUD\HasReadOperations;
 use Trovee\Repository\Concerns\HasEvents;
+use Trovee\Repository\Concerns\InteractsWithModel;
 use Trovee\Repository\Contracts\RepositoryInterface;
 
 /**
@@ -23,8 +26,10 @@ abstract class AbstractRepository implements RepositoryInterface
     use AppliesCriteria;
     use BootsTraits;
     use ForwardsCalls;
+    use HasCreateOperations;
     use HasEvents;
     use HasReadOperations;
+    use InteractsWithModel;
 
     protected string $model;
 
@@ -66,9 +71,7 @@ abstract class AbstractRepository implements RepositoryInterface
      */
     public function createNewBuilder(): RepositoryInterface
     {
-        /** @var Model $model */
-        $model = app()->make($this->model);
-        $this->query = $model->newQuery();
+        $this->createNewQueryBuilder();
 
         if (count($this->appliedCriteria)) {
             $this->clearAppliedCriteria();
@@ -80,15 +83,17 @@ abstract class AbstractRepository implements RepositoryInterface
     /**
      * @throws BindingResolutionException
      * @throws PhpVersionNotSupportedException
-     *
-     * @todo Improve this method
      */
-    public function where(array $conditions): RepositoryInterface
-    {
-        collect($conditions)
-            ->each(fn ($value, $key) => $this->apply(
-                fn (Builder $builder) => $builder->where($key, $value)
-            ));
+    public function where(
+        array|string|Expression|Closure $column,
+        $operator = null,
+        $value = null,
+        $boolean = 'and'
+    ): RepositoryInterface {
+
+        $this->apply(
+            fn (Builder $builder) => $builder->where($column, $operator, $value, $boolean)
+        );
 
         return $this;
     }
@@ -132,5 +137,26 @@ abstract class AbstractRepository implements RepositoryInterface
         }
 
         return $result;
+    }
+
+    private function detectMultiLevelArray(array $data): bool
+    {
+        if (count($data) == count($data, COUNT_RECURSIVE)) {
+            return false;
+        }
+
+        $keys = array_keys($data[0]);
+
+        foreach ($data as $item) {
+            if (! is_array($item)) {
+                return false;
+            }
+
+            if (count(array_diff($keys, array_keys($item))) > 0) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
