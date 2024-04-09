@@ -5,6 +5,7 @@ namespace Trovee\Repository\Concerns;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Trovee\Repository\Contracts\RepositoryInterface;
 
 trait InteractsWithModel
 {
@@ -21,18 +22,34 @@ trait InteractsWithModel
         return app()->make($this->model);
     }
 
-    protected function setRecord(Model $record): void
+    protected function setRecord(Model $record): RepositoryInterface
     {
         $this->record = $record;
+
+        return $this;
     }
 
-    protected function setResult(Model|Collection $result): void
+    protected function setResult(Model|Collection $result): RepositoryInterface
     {
         $this->result = $result;
+
+        return $this;
     }
 
     protected function getRecord(): Model
     {
+        if (! isset($this->record)) {
+            if (isset($this->result) && $this->result instanceof Model) {
+                $this->setRecord($this->result);
+
+                return $this->record;
+            }
+
+            throw new \LogicException(
+                'Failed to call getRecord() method. '.static::class.' needs to know which record to get.'
+            );
+        }
+
         return $this->record;
     }
 

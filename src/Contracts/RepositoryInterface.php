@@ -52,4 +52,13 @@ interface RepositoryInterface
     public function updateOrCreate(array $search, array $update): Arrayable;
 
     public function createThenReturn(array $data): RepositoryInterface;
+
+    // HasUpdateOperations
+    public function update(array $data): ?Arrayable;
+
+    public function updateFromRequest(FormRequest $request): ?Arrayable;
+
+    public function updateThenReturn(array $data): RepositoryInterface;
+
+    public function findAndUpdate(array $attributes, array $data): ?Arrayable;
 }

@@ -59,9 +59,6 @@ trait HasReadOperations
         return $this->result;
     }
 
-    /**
-     * @throws NoResultsFoundException
-     */
     public function firstOrFailByAttributes(array $attributes): Model
     {
         $result = $this->firstByAttributes($attributes);

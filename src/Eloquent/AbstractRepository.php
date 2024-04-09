@@ -11,8 +11,7 @@ use Illuminate\Support\Traits\ForwardsCalls;
 use Laravel\SerializableClosure\Exceptions\PhpVersionNotSupportedException;
 use Trovee\Repository\Concerns\BootsTraits;
 use Trovee\Repository\Concerns\Criteria\AppliesCriteria;
-use Trovee\Repository\Concerns\CRUD\HasCreateOperations;
-use Trovee\Repository\Concerns\CRUD\HasReadOperations;
+use Trovee\Repository\Concerns\CRUD;
 use Trovee\Repository\Concerns\HasEvents;
 use Trovee\Repository\Concerns\InteractsWithModel;
 use Trovee\Repository\Contracts\RepositoryInterface;
@@ -25,10 +24,11 @@ abstract class AbstractRepository implements RepositoryInterface
 {
     use AppliesCriteria;
     use BootsTraits;
+    use CRUD\HasCreateOperations;
+    use CRUD\HasReadOperations;
+    use CRUD\HasUpdateOperations;
     use ForwardsCalls;
-    use HasCreateOperations;
     use HasEvents;
-    use HasReadOperations;
     use InteractsWithModel;
 
     protected string $model;
