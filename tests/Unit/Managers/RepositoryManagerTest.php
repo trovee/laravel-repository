@@ -28,4 +28,3 @@ it('gets a repository for a model', function () {
 
     expect($repository)->toBe($repositoryMock);
 });
-

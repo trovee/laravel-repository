@@ -2,6 +2,7 @@
 
 namespace Trovee\Repository\Concerns;
 
+use Closure;
 use Illuminate\Support\Str;
 use Trovee\Repository\Contracts\HookInterface;
 use Trovee\Repository\Contracts\RepositoryInterface;
@@ -10,7 +11,7 @@ use Trovee\Repository\Exceptions\RepositoryIntegrityException;
 trait HasEvents
 {
     /**
-     * @var array<string, string[]>
+     * @var array<string, array<int,string|Closure>>
      */
     protected array $hooks = [];
 
@@ -58,7 +59,7 @@ trait HasEvents
         }
     }
 
-    private function addHook(string $hook, string $fqcn): RepositoryInterface
+    private function addHook(string $hook, string|Closure $fqcn): RepositoryInterface
     {
         $this->hooks[$hook][] = $fqcn;
 
