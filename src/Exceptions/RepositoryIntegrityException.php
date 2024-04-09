@@ -13,7 +13,7 @@ class RepositoryIntegrityException extends ClassException
         string $inheritance = '',
         ?Throwable $previous = null
     ) {
-        $is_class = interface_exists($inheritance) ? 'Interface' : 'Class';
+        $is_class = interface_exists($fqcn) ? 'Interface' : 'Class';
         $message = "Failed when trying to {$action} [{$fqcn}]. {$is_class} must {$verb}".
             ($inheritance ? " [{$inheritance}]." : '.');
         parent::__construct($message, 0, $previous);
