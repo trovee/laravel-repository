@@ -73,8 +73,15 @@ class RegistryManager
             return null;
         }
 
-        /** @var RepositoryAttribute $repositoryAttribute */
         $repositoryAttribute = $attribute->newInstance();
+
+        if(!($repositoryAttribute instanceof RepositoryAttribute)){
+            throw new RepositoryIntegrityException(
+                fqcn: get_class($repositoryAttribute),
+                verb: 'be an instance of',
+                inheritance: RepositoryAttribute::class
+            );
+        }
 
         return $repositoryAttribute->getRepository($model);
     }

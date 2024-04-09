@@ -34,7 +34,8 @@
         "phpstan/extension-installer": "^1.1",
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
-        "mockery/mockery": "^1.6"
+        "mockery/mockery": "^1.6",
+        "spatie/invade": "^2.0"
     },
     "config": {
         "allow-plugins": {
@@ -45,7 +46,8 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Trovee\\Repository\\RepositoryServiceProvider"
+                "Trovee\\Repository\\Providers\\RepositoryServiceProvider",
+                "Trovee\\Repository\\Providers\\EventServiceProvider"
             ],
             "aliases": {
                 "Repository": "Trovee\\Repository\\Facades\\Repository"

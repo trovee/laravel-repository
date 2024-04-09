@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Trovee\Repository\RepositoryServiceProvider;
+use Trovee\Repository\Providers\RepositoryServiceProvider;
 
 class TestCase extends Orchestra
 {

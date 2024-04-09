@@ -11,6 +11,7 @@ use Laravel\SerializableClosure\Exceptions\PhpVersionNotSupportedException;
 use Trovee\Repository\Concerns\BootsTraits;
 use Trovee\Repository\Concerns\Criteria\AppliesCriteria;
 use Trovee\Repository\Concerns\CRUD\HasReadOperations;
+use Trovee\Repository\Concerns\HasEvents;
 use Trovee\Repository\Contracts\RepositoryInterface;
 
 /**
@@ -22,6 +23,7 @@ abstract class AbstractRepository implements RepositoryInterface
     use AppliesCriteria;
     use BootsTraits;
     use ForwardsCalls;
+    use HasEvents;
     use HasReadOperations;
 
     protected string $model;
@@ -36,9 +38,7 @@ abstract class AbstractRepository implements RepositoryInterface
         $this->createNewBuilder();
         $this->bootTraits();
 
-        if (method_exists($this, 'onBoot')) { // todo: convert here to hook call
-            $this->onBoot();
-        }
+        $this->triggerHook('boot');
 
     }
 
@@ -83,7 +83,10 @@ abstract class AbstractRepository implements RepositoryInterface
      */
     public function where(array $conditions): RepositoryInterface
     {
-        $this->apply(fn (Builder $builder) => $builder->where($conditions));
+        collect($conditions)
+            ->each(fn ($value, $key) => $this->apply(
+                fn (Builder $builder) => $builder->where($key, $value)
+            ));
 
         return $this;
     }

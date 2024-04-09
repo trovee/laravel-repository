@@ -3,7 +3,7 @@
 namespace Trovee\Repository\Commands;
 
 use Illuminate\Console\Command;
-use Trovee\Repository\RepositoryServiceProvider;
+use Trovee\Repository\Providers\RepositoryServiceProvider;
 
 class InstallCommand extends Command
 {
