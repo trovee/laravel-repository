@@ -23,6 +23,8 @@ trait HasEvents
 
         $this->triggerClassHook($hook, ...$args);
 
+        $this->remember($hook, $args);
+
     }
 
     private function triggerMethodHook(string $hook, array $args): void

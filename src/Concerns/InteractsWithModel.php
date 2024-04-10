@@ -22,21 +22,21 @@ trait InteractsWithModel
         return app()->make($this->model);
     }
 
-    protected function setRecord(Model $record): RepositoryInterface
+    public function setRecord(Model $record): RepositoryInterface
     {
         $this->record = $record;
 
         return $this;
     }
 
-    protected function setResult(Model|Collection $result): RepositoryInterface
+    public function setResult(Model|Collection $result): RepositoryInterface
     {
         $this->result = $result;
 
         return $this;
     }
 
-    protected function getRecord(): Model
+    public function getRecord(): Model
     {
         if (! isset($this->record)) {
             if (isset($this->result) && $this->result instanceof Model) {
@@ -53,7 +53,7 @@ trait InteractsWithModel
         return $this->record;
     }
 
-    protected function getResult(): Model|Collection
+    public function getResult(): Model|Collection
     {
         return $this->result;
     }

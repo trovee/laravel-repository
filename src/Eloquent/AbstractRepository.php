@@ -14,6 +14,7 @@ use Trovee\Repository\Concerns\Criteria\AppliesCriteria;
 use Trovee\Repository\Concerns\CRUD;
 use Trovee\Repository\Concerns\HasEvents;
 use Trovee\Repository\Concerns\InteractsWithModel;
+use Trovee\Repository\Concerns\RemembersWhatHappened;
 use Trovee\Repository\Contracts\RepositoryInterface;
 
 /**
@@ -31,6 +32,7 @@ abstract class AbstractRepository implements RepositoryInterface
     use ForwardsCalls;
     use HasEvents;
     use InteractsWithModel;
+    use RemembersWhatHappened;
 
     protected string $model;
 
@@ -45,7 +47,6 @@ abstract class AbstractRepository implements RepositoryInterface
         $this->bootTraits();
 
         $this->trigger('boot');
-
     }
 
     public function proxyOf(string $model): RepositoryInterface
@@ -114,6 +115,13 @@ abstract class AbstractRepository implements RepositoryInterface
         };
     }
 
+    public function __invoke()
+    {
+        if ($this->isHistoryEnabled() && ! $this->isBooted()) {
+            $this->boot();
+        }
+    }
+
     protected function isCallingExistingMethod(string $method): bool
     {
         return method_exists($this, $method);
@@ -159,5 +167,10 @@ abstract class AbstractRepository implements RepositoryInterface
         }
 
         return true;
+    }
+
+    protected function isBooted(): bool
+    {
+        return $this->isHappened('boot');
     }
 }
