@@ -21,7 +21,7 @@ methods.
 
 ## Creating a repository
 
-The package comes with a set of well designed [Commands](./doc/commands?version=latest). But in this section we will
+The package comes with a set of well designed [Commands](./doc/commands?version=1.x). But in this section we will
 just need the `make:repository` command. You can simply create and configure everything you need, by just calling the
 command.
 

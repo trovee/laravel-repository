@@ -49,5 +49,5 @@ return [
 
 ```
 
-Check out the [Configuration](./doc/configuration?version=latest) section if you need more detailed information about.
+Check out the [Configuration](./doc/configuration?version=1.x) section if you need more detailed information about.
 
