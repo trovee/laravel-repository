@@ -4,9 +4,7 @@ namespace Trovee\Repository\Attributes;
 
 use Attribute;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Throwable;
 use Trovee\Repository\Contracts\RepositoryInterface;
-use Trovee\Repository\Exceptions\ClassException;
 use Trovee\Repository\Exceptions\ClassNotFoundException;
 use Trovee\Repository\Exceptions\RepositoryIntegrityException;
 use Trovee\Repository\Facades\Repository as RepositoryFacade;
@@ -18,10 +16,6 @@ class Repository
     {
     }
 
-    /**
-     * @throws Throwable
-     * @throws ClassException
-     */
     public function getRepository(string $target): RepositoryInterface
     {
         $this->validateRepository();
@@ -33,9 +27,6 @@ class Repository
         }
     }
 
-    /**
-     * @throws ClassNotFoundException
-     */
     protected function validateRepository(): void
     {
         $exception = match (true) {

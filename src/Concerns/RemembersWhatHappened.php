@@ -26,7 +26,7 @@ trait RemembersWhatHappened
 
         $this->optimizeMemory();
 
-        $this->history->put(now()->toString(), new MemoryFragment($event, $data));
+        $this->history->push(new MemoryFragment($event, $data));
     }
 
     public function isHappened(string $event): bool
@@ -45,6 +45,10 @@ trait RemembersWhatHappened
 
     public function optimizeMemory(): void
     {
+        if (! isset($this->history)) {
+            $this->history = new Collection();
+        }
+
         if ($this->history->count() <= config('repository.history.max_event_to_remember')) {
             return;
         }

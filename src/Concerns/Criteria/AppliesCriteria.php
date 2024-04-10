@@ -112,7 +112,5 @@ trait AppliesCriteria
     final protected function clearAppliedCriteria(): void
     {
         $this->appliedCriteria = [];
-
-        $this->trigger('criteria:cleared');
     }
 }

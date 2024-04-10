@@ -2,19 +2,12 @@
 
 namespace Trovee\Repository\Concerns\CRUD;
 
-use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Laravel\SerializableClosure\Exceptions\PhpVersionNotSupportedException;
 use Trovee\Repository\Exceptions\NoResultsFoundException;
 
 trait HasReadOperations
 {
-    /**
-     * @throws BindingResolutionException
-     * @throws PhpVersionNotSupportedException
-     */
     public function getByAttributes(array $attributes): Collection
     {
         $this->applyCriteria();
@@ -27,9 +20,6 @@ trait HasReadOperations
         return $this->result;
     }
 
-    /**
-     * @throws NoResultsFoundException
-     */
     public function getOrFailByAttributes(array $attributes): Collection
     {
         $result = $this->getByAttributes($attributes);
@@ -44,10 +34,6 @@ trait HasReadOperations
         return $this->result;
     }
 
-    /**
-     * @throws BindingResolutionException
-     * @throws PhpVersionNotSupportedException
-     */
     public function firstByAttributes(array $attributes): ?Model
     {
         $this->applyCriteria();
@@ -73,10 +59,6 @@ trait HasReadOperations
         return $this->result;
     }
 
-    /**
-     * @throws BindingResolutionException
-     * @throws PhpVersionNotSupportedException
-     */
     public function all(): Collection
     {
         $this->applyCriteria();
@@ -88,10 +70,6 @@ trait HasReadOperations
         return $this->result;
     }
 
-    /**
-     * @throws BindingResolutionException
-     * @throws PhpVersionNotSupportedException
-     */
     public function first(): ?Model
     {
         $this->applyCriteria();
@@ -102,10 +80,7 @@ trait HasReadOperations
         return $this->result;
     }
 
-    /**
-     * @throws NoResultsFoundException
-     */
-    public function firstOrFail(): Arrayable
+    public function firstOrFail(): Model
     {
         $this->trigger('op:read:firstOrFail');
 

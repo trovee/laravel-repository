@@ -2,12 +2,10 @@
 
 namespace Trovee\Repository\Providers;
 
-use Closure;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use Trovee\Repository\Commands;
-use Trovee\Repository\Managers\RegistryManager;
+use Trovee\Repository\Managers\RepositoryManager;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -46,19 +44,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
     }
 
-    protected function bootManager(): Closure
-    {
-        return function (Application $app) {
-            $manager = $app->make(RegistryManager::class);
-            $manager->boot();
-
-            return $manager;
-        };
-    }
-
     protected function handleBindings(): void
     {
-        $this->app->bind('repository.registry', $this->bootManager());
+        $this->app->bind('repository.registry', fn ($app) => $app->make(RepositoryManager::class));
 
         foreach (config('repository.bindings') as $abstract => $concrete) {
             if ($concrete === 'default') {

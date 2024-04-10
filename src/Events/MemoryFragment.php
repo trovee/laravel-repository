@@ -8,8 +8,10 @@ class MemoryFragment implements Arrayable
 {
     public function __construct(
         protected string $event,
-        protected mixed $data
+        protected mixed $data,
+        protected ?string $timestamp = null
     ) {
+        $this->timestamp = $timestamp ?? microtime(true);
     }
 
     public function toArray()

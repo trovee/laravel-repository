@@ -3,12 +3,10 @@
 namespace Trovee\Repository\Eloquent;
 
 use Closure;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\ForwardsCalls;
-use Laravel\SerializableClosure\Exceptions\PhpVersionNotSupportedException;
 use Trovee\Repository\Concerns\BootsTraits;
 use Trovee\Repository\Concerns\Criteria\AppliesCriteria;
 use Trovee\Repository\Concerns\CRUD;
@@ -38,9 +36,6 @@ abstract class AbstractRepository implements RepositoryInterface
 
     protected Builder $query;
 
-    /**
-     * @throws BindingResolutionException
-     */
     final public function boot(): void
     {
         $this->createNewBuilder();
@@ -56,9 +51,6 @@ abstract class AbstractRepository implements RepositoryInterface
         return $this;
     }
 
-    /**
-     * @throws BindingResolutionException
-     */
     public function getBuilder(): Builder
     {
         if (! isset($this->query)) {
@@ -68,9 +60,6 @@ abstract class AbstractRepository implements RepositoryInterface
         return $this->query;
     }
 
-    /**
-     * @throws BindingResolutionException
-     */
     public function createNewBuilder(): RepositoryInterface
     {
         $this->createNewQueryBuilder();
@@ -82,10 +71,6 @@ abstract class AbstractRepository implements RepositoryInterface
         return $this;
     }
 
-    /**
-     * @throws BindingResolutionException
-     * @throws PhpVersionNotSupportedException
-     */
     public function where(
         array|string|Expression|Closure $column,
         $operator = null,
@@ -100,10 +85,6 @@ abstract class AbstractRepository implements RepositoryInterface
         return $this;
     }
 
-    /**
-     * @throws BindingResolutionException
-     * @throws PhpVersionNotSupportedException
-     */
     public function __call($method, $parameters)
     {
         return match (true) {
